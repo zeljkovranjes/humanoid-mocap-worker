@@ -42,9 +42,9 @@ internal static class VideoCapture
         Action<string> progress, CancellationToken cancellation) => Task.Run(async () =>
     {
         progress("Opening video decoder…");
-        var (decoder, duration) = await FfmpegVideo.OpenAsync(video, start, cancellation);
-        using (decoder)
-            return await VideoFrames.CreateAsync(decoder.Read, duration, start, end, cache, progress, cancellation);
+        using var decoder = new FfmpegVideoDecoder(video);
+        decoder.Seek(start);
+        return await VideoFrames.CreateAsync(decoder.Read, decoder.Duration, start, end, cache, progress, cancellation);
     }, cancellation);
 }
 

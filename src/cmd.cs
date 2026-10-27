@@ -81,7 +81,9 @@ internal static class Cmd
     static async Task<int> ProbeAsync(Options options, CancellationToken cancellation)
     {
         options.Allow();
-        var duration = await FfmpegVideo.DurationAsync(Path.GetFullPath(options.Positional[0]), cancellation);
+        cancellation.ThrowIfCancellationRequested();
+        double duration;
+        using (var decoder = new FfmpegVideoDecoder(Path.GetFullPath(options.Positional[0]))) duration = decoder.Duration;
         Console.Out.WriteLine(JsonSerializer.Serialize(new { duration }));
         return 0;
     }
