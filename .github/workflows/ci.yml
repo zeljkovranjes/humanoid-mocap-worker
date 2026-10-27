@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '43 7 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    # Set these repository variables once the library checkouts are published.
+    if: vars.MOCAP_X_REPOSITORY != '' && vars.TENSOR_INFERENCE_REPOSITORY != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: services/humanoid-mocap-worker
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ vars.MOCAP_X_REPOSITORY }}
+          ref: ${{ vars.MOCAP_X_REF }}
+          path: sbox/libraries/humanoid-mocap-x
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ vars.TENSOR_INFERENCE_REPOSITORY }}
+          ref: ${{ vars.TENSOR_INFERENCE_REF }}
+          path: sbox/shaders/compute/tensor-inference
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: services/humanoid-mocap-worker/global.json
+      # Lavapipe gives the GPU tests a software Vulkan device; FFmpeg runs the decode tests.
+      - run: sudo apt-get update && sudo apt-get install --yes mesa-vulkan-drivers ffmpeg
+      - run: dotnet build HumanoidMocapWorker.csproj --configuration Release -p:RestoreLockedMode=true
+        working-directory: services/humanoid-mocap-worker
+      - run: dotnet run --project tests/Worker.Tests.csproj --configuration Release
+        working-directory: services/humanoid-mocap-worker

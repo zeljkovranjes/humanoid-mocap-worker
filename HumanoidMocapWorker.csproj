@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>humanoid-mocap-worker</AssemblyName>
+    <RootNamespace>HumanoidMocapWorker</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>annotations</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Description>Standalone Linux capture worker for Humanoid Mocap X.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- Library sources are linked unchanged from the workspace. Override WorkspaceRoot to
+         build against another checkout with the same sbox/ layout (for example a snapshot). -->
+    <WorkspaceRoot Condition="'$(WorkspaceRoot)' == ''">$(MSBuildThisFileDirectory)../..</WorkspaceRoot>
+    <MocapXRoot>$(WorkspaceRoot)/sbox/libraries/humanoid-mocap-x</MocapXRoot>
+    <TensorRoot>$(WorkspaceRoot)/sbox/shaders/compute/tensor-inference</TensorRoot>
+  </PropertyGroup>
+
+  <!-- Every source file taken from the s&box libraries. Keep this the only list. -->
+  <ItemGroup Label="Library sources">
+    <Compile Include="$(MocapXRoot)/Code/**/*.cs" Exclude="$(MocapXRoot)/Code/obj/**;$(MocapXRoot)/Code/Properties/**" Link="lib/x/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="$(MocapXRoot)/Editor/FlowVideoProcessor.cs;$(MocapXRoot)/Editor/FlowCheckpoint.cs;$(MocapXRoot)/Editor/CaptureModels.cs;$(MocapXRoot)/Editor/SmplModel.cs;$(MocapXRoot)/Editor/FlowMotionAdapter.cs;$(MocapXRoot)/Editor/YoloCheckpoint.cs;$(MocapXRoot)/Editor/MhrCheckpoint.cs;$(MocapXRoot)/Editor/SamCheckpoint.cs;$(MocapXRoot)/Editor/VisionCheckpoint.cs;$(MocapXRoot)/Editor/SamFeatures.cs;$(MocapXRoot)/Editor/VideoFrames.cs;$(MocapXRoot)/Editor/ModelStore.cs;$(MocapXRoot)/Editor/ModelStore.Perception.cs;$(MocapXRoot)/Editor/ModelStore.Smpl.cs;$(MocapXRoot)/Editor/ModelStore.Installed.cs;$(MocapXRoot)/Editor/HumanoidMocap/Video/DecodedVideoFrame.cs;$(MocapXRoot)/Editor/HumanoidMocap/Video/LinearRgbImage.cs" Link="lib/x-editor/%(Filename)%(Extension)" />
+    <Compile Include="$(MocapXRoot)/Editor/Gpu/*.cs;$(MocapXRoot)/Editor/Inference/*.cs" Link="lib/x-editor/%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- TensorBatch needs an engine scene and camera; src/sandbox/TensorBatch.cs replaces it. -->
+    <Compile Include="$(TensorRoot)/Code/*.cs" Exclude="$(TensorRoot)/Code/TensorBatch.cs" Link="lib/tensor/%(Filename)%(Extension)" />
+    <TensorShader Include="$(TensorRoot)/Assets/shaders/tensor-inference/**/*.shader" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="humanoid-mocap-worker-tests" />
+    <Compile Include="src/**/*.cs" />
+    <EmbeddedResource Include="src/gen/*.spv;src/gen/*.json" LogicalName="%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- src/gen holds SPIR-V extracted from the editor's compiled shaders. Refuse to build when
+       the linked tensor-inference shader sources no longer match what was extracted. -->
+  <Target Name="CheckExtractedShaders" BeforeTargets="CoreCompile">
+    <GetFileHash Files="@(TensorShader)" Algorithm="SHA256">
+      <Output TaskParameter="Items" ItemName="TensorShaderHash" />
+    </GetFileHash>
+    <ReadLinesFromFile File="src/gen/sources.sha256">
+      <Output TaskParameter="Lines" ItemName="ExtractedShaderHash" />
+    </ReadLinesFromFile>
+    <ItemGroup>
+      <CurrentShaderHash Include="@(TensorShaderHash->'%(FileHash)  %(Filename)%(Extension)')" />
+      <StaleShader Include="@(CurrentShaderHash)" Exclude="@(ExtractedShaderHash)" />
+    </ItemGroup>
+    <Error Condition="'@(TensorShader)' == '' or '@(StaleShader)' != ''"
+           Text="Tensor shaders differ from src/gen (@(StaleShader->'%(Identity)', ', ')). Compile them in the s&amp;box editor, then run codegen (see README)." />
+  </Target>
+</Project>

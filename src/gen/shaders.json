@@ -1,0 +1,630 @@
+{
+  "Compiler": "libvfx_vulkan.so 3e849cf708066a0f62a9c334c55b4f9d3e9737d886c457d56439cf87136deecc",
+  "Shaders": [
+    {
+      "Path": "shaders/tensor-inference/attention/attention_compute.shader",
+      "Spirv": "attention_compute.spv",
+      "SourceSha256": "1BCA5E12A3AD86BD888AB17FBE2E619325A97C8A59D23991080240BF5C2000F3",
+      "LocalSize": [
+        64,
+        1,
+        1
+      ],
+      "Constants": {
+        "Binding": 0,
+        "Size": 16,
+        "Members": [
+          {
+            "Name": "Tokens",
+            "Offset": 0,
+            "Type": "uint"
+          },
+          {
+            "Name": "KeyTokens",
+            "Offset": 4,
+            "Type": "uint"
+          },
+          {
+            "Name": "Heads",
+            "Offset": 8,
+            "Type": "uint"
+          },
+          {
+            "Name": "HeadWidth",
+            "Offset": 12,
+            "Type": "uint"
+          }
+        ]
+      },
+      "Buffers": [
+        {
+          "Name": "Query",
+          "Binding": 46,
+          "Writable": false
+        },
+        {
+          "Name": "Key",
+          "Binding": 47,
+          "Writable": false
+        },
+        {
+          "Name": "Value",
+          "Binding": 48,
+          "Writable": false
+        },
+        {
+          "Name": "KeyRanges",
+          "Binding": 49,
+          "Writable": false
+        },
+        {
+          "Name": "Output",
+          "Binding": 174,
+          "Writable": true
+        }
+      ]
+    },
+    {
+      "Path": "shaders/tensor-inference/attention/attention_query_compute.shader",
+      "Spirv": "attention_query_compute.spv",
+      "SourceSha256": "F7FC8CB82D2FDEFDA8AB4A6BA58CC5A6913055571DC72C8699135360810E9065",
+      "LocalSize": [
+        64,
+        1,
+        1
+      ],
+      "Constants": {
+        "Binding": 0,
+        "Size": 20,
+        "Members": [
+          {
+            "Name": "Tokens",
+            "Offset": 0,
+            "Type": "uint"
+          },
+          {
+            "Name": "KeyTokens",
+            "Offset": 4,
+            "Type": "uint"
+          },
+          {
+            "Name": "Heads",
+            "Offset": 8,
+            "Type": "uint"
+          },
+          {
+            "Name": "HeadWidth",
+            "Offset": 12,
+            "Type": "uint"
+          },
+          {
+            "Name": "Zero",
+            "Offset": 16,
+            "Type": "uint"
+          }
+        ]
+      },
+      "Buffers": [
+        {
+          "Name": "Query",
+          "Binding": 46,
+          "Writable": false
+        },
+        {
+          "Name": "Key",
+          "Binding": 47,
+          "Writable": false
+        },
+        {
+          "Name": "Value",
+          "Binding": 48,
+          "Writable": false
+        },
+        {
+          "Name": "KeyRanges",
+          "Binding": 49,
+          "Writable": false
+        },
+        {
+          "Name": "Output",
+          "Binding": 174,
+          "Writable": true
+        }
+      ]
+    },
+    {
+      "Path": "shaders/tensor-inference/convolution/convolution_compute.shader",
+      "Spirv": "convolution_compute.spv",
+      "SourceSha256": "75CB58B4D666920AC69818BA39C11635DACD0175833135952E39FA25C1FCA0CE",
+      "LocalSize": [
+        16,
+        16,
+        1
+      ],
+      "Constants": {
+        "Binding": 0,
+        "Size": 44,
+        "Members": [
+          {
+            "Name": "Height",
+            "Offset": 0,
+            "Type": "uint"
+          },
+          {
+            "Name": "Width",
+            "Offset": 4,
+            "Type": "uint"
+          },
+          {
+            "Name": "Channels",
+            "Offset": 8,
+            "Type": "uint"
+          },
+          {
+            "Name": "Outputs",
+            "Offset": 12,
+            "Type": "uint"
+          },
+          {
+            "Name": "Kernel",
+            "Offset": 16,
+            "Type": "uint"
+          },
+          {
+            "Name": "Stride",
+            "Offset": 20,
+            "Type": "uint"
+          },
+          {
+            "Name": "Padding",
+            "Offset": 24,
+            "Type": "uint"
+          },
+          {
+            "Name": "OutputWidth",
+            "Offset": 28,
+            "Type": "uint"
+          },
+          {
+            "Name": "OutputPixels",
+            "Offset": 32,
+            "Type": "uint"
+          },
+          {
+            "Name": "KernelElements",
+            "Offset": 36,
+            "Type": "uint"
+          },
+          {
+            "Name": "HasBias",
+            "Offset": 40,
+            "Type": "uint"
+          }
+        ]
+      },
+      "Buffers": [
+        {
+          "Name": "Input",
+          "Binding": 46,
+          "Writable": false
+        },
+        {
+          "Name": "Weight",
+          "Binding": 47,
+          "Writable": false
+        },
+        {
+          "Name": "Bias",
+          "Binding": 48,
+          "Writable": false
+        },
+        {
+          "Name": "Output",
+          "Binding": 174,
+          "Writable": true
+        }
+      ]
+    },
+    {
+      "Path": "shaders/tensor-inference/elementwise/elementwise_compute.shader",
+      "Spirv": "elementwise_compute.spv",
+      "SourceSha256": "50D6DB6EA7DA68F1244739BB77BB4B62C69B555256559408039DED6465925A27",
+      "LocalSize": [
+        256,
+        1,
+        1
+      ],
+      "Constants": {
+        "Binding": 0,
+        "Size": 24,
+        "Members": [
+          {
+            "Name": "Count",
+            "Offset": 0,
+            "Type": "uint"
+          },
+          {
+            "Name": "Width",
+            "Offset": 4,
+            "Type": "uint"
+          },
+          {
+            "Name": "Operation",
+            "Offset": 8,
+            "Type": "uint"
+          },
+          {
+            "Name": "FirstOffset",
+            "Offset": 12,
+            "Type": "uint"
+          },
+          {
+            "Name": "SecondOffset",
+            "Offset": 16,
+            "Type": "uint"
+          },
+          {
+            "Name": "Amount",
+            "Offset": 20,
+            "Type": "float"
+          }
+        ]
+      },
+      "Buffers": [
+        {
+          "Name": "Input",
+          "Binding": 46,
+          "Writable": false
+        },
+        {
+          "Name": "Other",
+          "Binding": 47,
+          "Writable": false
+        },
+        {
+          "Name": "Parameters",
+          "Binding": 48,
+          "Writable": false
+        },
+        {
+          "Name": "Output",
+          "Binding": 174,
+          "Writable": true
+        }
+      ]
+    },
+    {
+      "Path": "shaders/tensor-inference/layout/layout_compute.shader",
+      "Spirv": "layout_compute.spv",
+      "SourceSha256": "E0DF7F34B6A7A6FA5DD755E5141E01A7B9DBFA4B908D32914EA3851D79F22B9A",
+      "LocalSize": [
+        256,
+        1,
+        1
+      ],
+      "Constants": {
+        "Binding": 0,
+        "Size": 20,
+        "Members": [
+          {
+            "Name": "Count",
+            "Offset": 0,
+            "Type": "uint"
+          },
+          {
+            "Name": "FirstWidth",
+            "Offset": 4,
+            "Type": "uint"
+          },
+          {
+            "Name": "SecondWidth",
+            "Offset": 8,
+            "Type": "uint"
+          },
+          {
+            "Name": "FirstColumn",
+            "Offset": 12,
+            "Type": "uint"
+          },
+          {
+            "Name": "Columns",
+            "Offset": 16,
+            "Type": "uint"
+          }
+        ]
+      },
+      "Buffers": [
+        {
+          "Name": "First",
+          "Binding": 46,
+          "Writable": false
+        },
+        {
+          "Name": "Second",
+          "Binding": 47,
+          "Writable": false
+        },
+        {
+          "Name": "Output",
+          "Binding": 174,
+          "Writable": true
+        }
+      ]
+    },
+    {
+      "Path": "shaders/tensor-inference/linear/linear_compute.shader",
+      "Spirv": "linear_compute.spv",
+      "SourceSha256": "995F1506B4AE89C195444CD5C30F963C81D9F3F9BEB5C5D3A74CFC22F1F54D51",
+      "LocalSize": [
+        16,
+        16,
+        1
+      ],
+      "Constants": {
+        "Binding": 0,
+        "Size": 16,
+        "Members": [
+          {
+            "Name": "Rows",
+            "Offset": 0,
+            "Type": "uint"
+          },
+          {
+            "Name": "Inputs",
+            "Offset": 4,
+            "Type": "uint"
+          },
+          {
+            "Name": "Outputs",
+            "Offset": 8,
+            "Type": "uint"
+          },
+          {
+            "Name": "HasBias",
+            "Offset": 12,
+            "Type": "uint"
+          }
+        ]
+      },
+      "Buffers": [
+        {
+          "Name": "Input",
+          "Binding": 46,
+          "Writable": false
+        },
+        {
+          "Name": "Weight",
+          "Binding": 47,
+          "Writable": false
+        },
+        {
+          "Name": "Bias",
+          "Binding": 48,
+          "Writable": false
+        },
+        {
+          "Name": "Output",
+          "Binding": 174,
+          "Writable": true
+        }
+      ]
+    },
+    {
+      "Path": "shaders/tensor-inference/normalization/normalization_compute.shader",
+      "Spirv": "normalization_compute.spv",
+      "SourceSha256": "873C406B9D4B4BC2EC9E1FD83373F475AA397C33138F0F8761000FDA6E131220",
+      "LocalSize": [
+        64,
+        1,
+        1
+      ],
+      "Constants": {
+        "Binding": 0,
+        "Size": 24,
+        "Members": [
+          {
+            "Name": "Rows",
+            "Offset": 0,
+            "Type": "uint"
+          },
+          {
+            "Name": "Width",
+            "Offset": 4,
+            "Type": "uint"
+          },
+          {
+            "Name": "HasScale",
+            "Offset": 8,
+            "Type": "uint"
+          },
+          {
+            "Name": "HasBias",
+            "Offset": 12,
+            "Type": "uint"
+          },
+          {
+            "Name": "Rms",
+            "Offset": 16,
+            "Type": "uint"
+          },
+          {
+            "Name": "Epsilon",
+            "Offset": 20,
+            "Type": "float"
+          }
+        ]
+      },
+      "Buffers": [
+        {
+          "Name": "Input",
+          "Binding": 46,
+          "Writable": false
+        },
+        {
+          "Name": "Scale",
+          "Binding": 47,
+          "Writable": false
+        },
+        {
+          "Name": "Bias",
+          "Binding": 48,
+          "Writable": false
+        },
+        {
+          "Name": "Output",
+          "Binding": 174,
+          "Writable": true
+        }
+      ]
+    },
+    {
+      "Path": "shaders/tensor-inference/reduction/mean_compute.shader",
+      "Spirv": "mean_compute.spv",
+      "SourceSha256": "A66A2B79F8745D9832F34A9DBEC72455E800CB45B157C21E3EB1F25736262DED",
+      "LocalSize": [
+        256,
+        1,
+        1
+      ],
+      "Constants": {
+        "Binding": 0,
+        "Size": 8,
+        "Members": [
+          {
+            "Name": "Rows",
+            "Offset": 0,
+            "Type": "uint"
+          },
+          {
+            "Name": "Width",
+            "Offset": 4,
+            "Type": "uint"
+          }
+        ]
+      },
+      "Buffers": [
+        {
+          "Name": "Input",
+          "Binding": 46,
+          "Writable": false
+        },
+        {
+          "Name": "Output",
+          "Binding": 174,
+          "Writable": true
+        }
+      ]
+    },
+    {
+      "Path": "shaders/tensor-inference/rotary/rotary_compute.shader",
+      "Spirv": "rotary_compute.spv",
+      "SourceSha256": "B924AD926CF98EB3CB681A61204801F32E0494A2F434944BE76EE89C9B16D49D",
+      "LocalSize": [
+        256,
+        1,
+        1
+      ],
+      "Constants": {
+        "Binding": 0,
+        "Size": 20,
+        "Members": [
+          {
+            "Name": "Pairs",
+            "Offset": 0,
+            "Type": "uint"
+          },
+          {
+            "Name": "Width",
+            "Offset": 4,
+            "Type": "uint"
+          },
+          {
+            "Name": "HeadWidth",
+            "Offset": 8,
+            "Type": "uint"
+          },
+          {
+            "Name": "Positions",
+            "Offset": 12,
+            "Type": "uint"
+          },
+          {
+            "Name": "SplitHalves",
+            "Offset": 16,
+            "Type": "uint"
+          }
+        ]
+      },
+      "Buffers": [
+        {
+          "Name": "Factors",
+          "Binding": 46,
+          "Writable": false
+        },
+        {
+          "Name": "Values",
+          "Binding": 174,
+          "Writable": true
+        }
+      ]
+    },
+    {
+      "Path": "shaders/tensor-inference/spatial/spatial_compute.shader",
+      "Spirv": "spatial_compute.spv",
+      "SourceSha256": "F655A407DD39CBAE07574E44425E8B7AC9DBF1FC09192A0848278D0E2208E698",
+      "LocalSize": [
+        256,
+        1,
+        1
+      ],
+      "Constants": {
+        "Binding": 0,
+        "Size": 24,
+        "Members": [
+          {
+            "Name": "Height",
+            "Offset": 0,
+            "Type": "uint"
+          },
+          {
+            "Name": "Width",
+            "Offset": 4,
+            "Type": "uint"
+          },
+          {
+            "Name": "Channels",
+            "Offset": 8,
+            "Type": "uint"
+          },
+          {
+            "Name": "Count",
+            "Offset": 12,
+            "Type": "uint"
+          },
+          {
+            "Name": "Operation",
+            "Offset": 16,
+            "Type": "uint"
+          },
+          {
+            "Name": "Kernel",
+            "Offset": 20,
+            "Type": "uint"
+          }
+        ]
+      },
+      "Buffers": [
+        {
+          "Name": "Input",
+          "Binding": 46,
+          "Writable": false
+        },
+        {
+          "Name": "Output",
+          "Binding": 174,
+          "Writable": true
+        }
+      ]
+    }
+  ]
+}
