@@ -28,7 +28,7 @@ internal static class VideoCapture
         var (features, observations) = await processor.FeaturesAsync(visible, person.Boxes, camera.Intrinsics, cancellation); FixtureCapture.ReleaseMemory();
         var motion = await processor.GenerateAsync(features, camera.Rotations, visible.Count, cancellation);
         motion.Video = request.Video; motion.Name = Path.GetFileNameWithoutExtension(request.Video); motion.StartTime = request.Start + person.StartSeconds;
-        var document = motion.ToDocument(); new ObservedDetail(observations, camera.Rotations).Apply(document);
+        var document = motion.ToDocument(); new ObservedDetail(observations, camera.Rotations, camera.Travel).Apply(document);
         if (person.Note(request.Start, frames.Count) is { } note) document.Diagnostics.Add(note);
         var partial = request.Output + ".partial";
         try

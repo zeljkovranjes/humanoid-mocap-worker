@@ -10,7 +10,7 @@ namespace HumanoidMocapWorker;
 /// output exactly as the editor's ClipChecks does, so the files can be compared byte for byte.</summary>
 internal static class FixtureCapture
 {
-    /// <summary>Writes boxes, rotations, intrinsics, features, flow-motion, capture.hmotion,
+    /// <summary>Writes boxes, rotations, intrinsics, camera travel, features, flow-motion, capture.hmotion,
     /// human.fbx and citizen.fbx (plus timings) into a new directory. Returns stage seconds.</summary>
     internal static async Task<Dictionary<string, double>> RunAsync(Fixture fixture, string directory,
         Action<string> progress, CancellationToken cancellation)
@@ -30,13 +30,13 @@ internal static class FixtureCapture
         await Save("boxes.json", boxes); await Save("timings.json", times); ReleaseMemory(); timer.Restart();
         var camera = await processor.CameraAsync(frames, cancellation);
         times["Camera"] = timer.Elapsed.TotalSeconds;
-        await Save("rotations.json", camera.Rotations); await Save("intrinsics.json", camera.Intrinsics); await Save("timings.json", times); ReleaseMemory(); timer.Restart();
+        await Save("rotations.json", camera.Rotations); await Save("intrinsics.json", camera.Intrinsics); await Save("travel.json", camera.Travel); await Save("timings.json", times); ReleaseMemory(); timer.Restart();
         var (features, observations) = await processor.FeaturesAsync(frames, boxes, camera.Intrinsics, cancellation);
         times["Features"] = timer.Elapsed.TotalSeconds;
         await Save("features.json", features); await Save("observations.json", observations); await Save("timings.json", times); ReleaseMemory(); timer.Restart();
         var motion = await processor.GenerateAsync(features, camera.Rotations, frames.Count, cancellation);
         times["Generation"] = timer.Elapsed.TotalSeconds; timer.Restart();
-        var detail = new ObservedDetail(observations, camera.Rotations);
+        var detail = new ObservedDetail(observations, camera.Rotations, camera.Travel);
         await Task.Run(() => MotionExport.WriteAsync(motion, detail, fixture.SourceVideo, fixture.RigDirectory, directory, cancellation), cancellation);
         times["Export"] = timer.Elapsed.TotalSeconds;
         await Save("timings.json", times);
