@@ -1,6 +1,7 @@
 using System.Text.Json;
 using HumanoidMocapX;
 using HumanoidMocapX.EditorTools;
+using HumanoidMocapX.Inference;
 
 namespace HumanoidMocapWorker;
 
@@ -24,10 +25,10 @@ internal static class VideoCapture
         var person = await processor.DetectAsync(frames, cancellation); FixtureCapture.ReleaseMemory();
         var visible = person.Visible(frames);
         var camera = await processor.CameraAsync(visible, cancellation); FixtureCapture.ReleaseMemory();
-        var features = await processor.FeaturesAsync(visible, person.Boxes, camera.Intrinsics, cancellation); FixtureCapture.ReleaseMemory();
+        var (features, observations) = await processor.FeaturesAsync(visible, person.Boxes, camera.Intrinsics, cancellation); FixtureCapture.ReleaseMemory();
         var motion = await processor.GenerateAsync(features, camera.Rotations, visible.Count, cancellation);
         motion.Video = request.Video; motion.Name = Path.GetFileNameWithoutExtension(request.Video); motion.StartTime = request.Start + person.StartSeconds;
-        var document = motion.ToDocument();
+        var document = motion.ToDocument(); new ObservedDetail(observations, camera.Rotations).Apply(document);
         if (person.Note(request.Start, frames.Count) is { } note) document.Diagnostics.Add(note);
         var partial = request.Output + ".partial";
         try

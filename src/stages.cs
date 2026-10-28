@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using HumanoidMocapX;
 using HumanoidMocapX.EditorTools;
+using HumanoidMocapX.Inference;
 
 namespace HumanoidMocapWorker;
 
@@ -30,12 +31,13 @@ internal static class FixtureCapture
         var camera = await processor.CameraAsync(frames, cancellation);
         times["Camera"] = timer.Elapsed.TotalSeconds;
         await Save("rotations.json", camera.Rotations); await Save("intrinsics.json", camera.Intrinsics); await Save("timings.json", times); ReleaseMemory(); timer.Restart();
-        var features = await processor.FeaturesAsync(frames, boxes, camera.Intrinsics, cancellation);
+        var (features, observations) = await processor.FeaturesAsync(frames, boxes, camera.Intrinsics, cancellation);
         times["Features"] = timer.Elapsed.TotalSeconds;
-        await Save("features.json", features); await Save("timings.json", times); ReleaseMemory(); timer.Restart();
+        await Save("features.json", features); await Save("observations.json", observations); await Save("timings.json", times); ReleaseMemory(); timer.Restart();
         var motion = await processor.GenerateAsync(features, camera.Rotations, frames.Count, cancellation);
         times["Generation"] = timer.Elapsed.TotalSeconds; timer.Restart();
-        await Task.Run(() => MotionExport.WriteAsync(motion, fixture.SourceVideo, fixture.RigDirectory, directory, cancellation), cancellation);
+        var detail = new ObservedDetail(observations, camera.Rotations);
+        await Task.Run(() => MotionExport.WriteAsync(motion, detail, fixture.SourceVideo, fixture.RigDirectory, directory, cancellation), cancellation);
         times["Export"] = timer.Elapsed.TotalSeconds;
         await Save("timings.json", times);
         return times;

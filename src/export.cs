@@ -1,20 +1,22 @@
 using System.Text;
 using System.Text.Json;
 using HumanoidMocapX;
+using HumanoidMocapX.Inference;
 
 namespace HumanoidMocapWorker;
 
 /// <summary>Writes a captured motion the way the editor's clip check does: the .hmotion
-/// document, the raw FlowHMR motion and Human/Citizen FBX retargets.</summary>
+/// document refined by what the video shows, the raw FlowHMR motion and Human/Citizen FBX retargets.</summary>
 internal static class MotionExport
 {
     /// <summary>Writes capture.hmotion, flow-motion.json, human.fbx and citizen.fbx into
     /// directory. Throws when retargeting fails or an FBX does not round-trip.</summary>
-    internal static async Task WriteAsync(FlowMotion motion, string sourceVideo, string rigDirectory, string directory,
+    internal static async Task WriteAsync(FlowMotion motion, ObservedDetail detail, string sourceVideo, string rigDirectory, string directory,
         CancellationToken cancellation)
     {
         motion.Video = sourceVideo; motion.Name = Path.GetFileNameWithoutExtension(sourceVideo);
-        var bytes = Encoding.UTF8.GetBytes(motion.ToDocument().ToJson());
+        var document = motion.ToDocument(); detail.Apply(document);
+        var bytes = Encoding.UTF8.GetBytes(document.ToJson());
         await File.WriteAllBytesAsync(Path.Combine(directory, "capture.hmotion"), bytes, cancellation);
         await File.WriteAllTextAsync(Path.Combine(directory, "flow-motion.json"), JsonSerializer.Serialize(motion), cancellation);
         foreach (var citizen in new[] { false, true })
