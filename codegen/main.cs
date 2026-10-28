@@ -7,7 +7,7 @@ using HumanoidMocapWorker.Codegen;
 // worker dispatches byte-identical programs without the editor installed.
 if (args.Length != 3)
 {
-    Console.Error.WriteLine("usage: shader-codegen <s&box game directory> <tensor-inference Assets directory> <output directory>");
+    Console.Error.WriteLine("usage: shader-codegen <s&box game directory> <Humanoid Mocap X Assets directory> <output directory>");
     return 2;
 }
 var (game, assets, output) = (Path.GetFullPath(args[0]), Path.GetFullPath(args[1]), Path.GetFullPath(args[2]));

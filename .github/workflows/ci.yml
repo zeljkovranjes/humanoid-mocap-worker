@@ -12,8 +12,8 @@ permissions:
 
 jobs:
   test:
-    # Set these repository variables once the library checkouts are published.
-    if: vars.MOCAP_X_REPOSITORY != '' && vars.TENSOR_INFERENCE_REPOSITORY != ''
+    # Set these repository variables once the library checkout is published.
+    if: vars.MOCAP_X_REPOSITORY != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -25,12 +25,6 @@ jobs:
           repository: ${{ vars.MOCAP_X_REPOSITORY }}
           ref: ${{ vars.MOCAP_X_REF }}
           path: sbox/libraries/humanoid-mocap-x
-          persist-credentials: false
-      - uses: actions/checkout@v7
-        with:
-          repository: ${{ vars.TENSOR_INFERENCE_REPOSITORY }}
-          ref: ${{ vars.TENSOR_INFERENCE_REF }}
-          path: sbox/shaders/compute/tensor-inference
           persist-credentials: false
       - uses: actions/setup-dotnet@v6
         with:

@@ -1,6 +1,6 @@
 using HumanoidMocapWorker;
 using Sandbox;
-using TensorInference;
+using HumanoidMocapX.TensorInference;
 
 static class GpuTests
 {

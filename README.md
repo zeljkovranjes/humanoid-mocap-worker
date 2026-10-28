@@ -18,9 +18,9 @@ dotnet build -c Release
 ./bin/Release/net10.0/humanoid-mocap-worker capture clip.mp4 clip.hmotion
 ```
 
-The build compiles the Humanoid Mocap X and Tensor Inference sources from
-their workspace checkouts; neither the build nor a capture needs s&box. Install
-the .NET 10 SDK and FFmpeg (`ffmpeg` and `ffprobe` on `PATH`).
+The build compiles the Humanoid Mocap X sources, including its built-in Tensor
+Inference, from the workspace checkout; neither the build nor a capture needs
+s&box. Install the .NET 10 SDK and FFmpeg (`ffmpeg` and `ffprobe` on `PATH`).
 
 <br>
 

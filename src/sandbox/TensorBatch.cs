@@ -2,9 +2,9 @@ using HumanoidMocapWorker;
 using HumanoidMocapWorker.Vulkan;
 using Sandbox;
 
-namespace TensorInference;
+namespace HumanoidMocapX.TensorInference;
 
-/// <summary>Replaces tensor-inference's TensorBatch, which needs an engine scene and camera.
+/// <summary>Replaces Humanoid Mocap X's TensorBatch, which needs an engine scene and camera.
 /// Same contract: records tensor work, submits it and reads back the result prefix.
 /// Create, run and dispose on the main thread. One batch may be in flight per instance.</summary>
 public sealed class TensorBatch : IDisposable

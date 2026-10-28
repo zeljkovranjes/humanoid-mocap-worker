@@ -37,7 +37,7 @@ regenerate. This needs an s&box installation; running the worker does not.
 
 ```sh
 dotnet run --project codegen/ShaderCodegen.csproj -- \
-    "$FACEPUNCH_ENGINE" ../../sbox/shaders/compute/tensor-inference/Assets src/gen
+    "$FACEPUNCH_ENGINE" ../../sbox/libraries/humanoid-mocap-x/Assets src/gen
 ```
 
 ## Video decoding
