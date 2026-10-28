@@ -22,7 +22,9 @@ internal static class FixtureCapture
         using var frames = new RawFrames(fixture.RgbaPath, fixture.Width, fixture.Height, fixture.Frames);
         var times = new Dictionary<string, double>();
         var timer = Stopwatch.StartNew();
-        var boxes = await processor.DetectAsync(frames, cancellation);
+        var person = await processor.DetectAsync(frames, cancellation);
+        if (person.First != 0 || person.Count != frames.Count) throw new InvalidDataException("The validation fixture must show the person in every frame.");
+        var boxes = person.Boxes;
         times["Detection"] = timer.Elapsed.TotalSeconds;
         await Save("boxes.json", boxes); await Save("timings.json", times); ReleaseMemory(); timer.Restart();
         var camera = await processor.CameraAsync(frames, cancellation);

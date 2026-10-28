@@ -20,16 +20,20 @@ internal static class VideoCapture
         using var frames = await DecodeAsync(request.Video, request.Start, request.End, request.CacheDirectory, Report, cancellation);
         // FlowVideoProcessor.RunAsync's stages, with managed memory released between them.
         var processor = new FlowVideoProcessor(models, options, null, progress);
-        var boxes = await processor.DetectAsync(frames, cancellation); FixtureCapture.ReleaseMemory();
-        var camera = await processor.CameraAsync(frames, cancellation); FixtureCapture.ReleaseMemory();
-        var features = await processor.FeaturesAsync(frames, boxes, camera.Intrinsics, cancellation); FixtureCapture.ReleaseMemory();
-        var motion = await processor.GenerateAsync(features, camera.Rotations, frames.Count, cancellation);
-        motion.Video = request.Video; motion.Name = Path.GetFileNameWithoutExtension(request.Video); motion.StartTime = request.Start;
+        // Later stages cover only the frames in which the person is visible.
+        var person = await processor.DetectAsync(frames, cancellation); FixtureCapture.ReleaseMemory();
+        var visible = person.Visible(frames);
+        var camera = await processor.CameraAsync(visible, cancellation); FixtureCapture.ReleaseMemory();
+        var features = await processor.FeaturesAsync(visible, person.Boxes, camera.Intrinsics, cancellation); FixtureCapture.ReleaseMemory();
+        var motion = await processor.GenerateAsync(features, camera.Rotations, visible.Count, cancellation);
+        motion.Video = request.Video; motion.Name = Path.GetFileNameWithoutExtension(request.Video); motion.StartTime = request.Start + person.StartSeconds;
+        var document = motion.ToDocument();
+        if (person.Note(request.Start, frames.Count) is { } note) document.Diagnostics.Add(note);
         var partial = request.Output + ".partial";
         try
         {
             await using (var output = new FileStream(partial, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
-                await JsonSerializer.SerializeAsync(output, motion.ToDocument(), MotionDocument.JsonOptions, cancellation);
+                await JsonSerializer.SerializeAsync(output, document, MotionDocument.JsonOptions, cancellation);
             File.Move(partial, request.Output, overwrite: true);
         }
         finally { if (File.Exists(partial)) File.Delete(partial); }
